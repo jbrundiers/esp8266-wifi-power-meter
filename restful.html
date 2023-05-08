@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="author" content="(c) 2021-2023 Lars Wessels">
+<title>RESTful</title>
+<style>
+body{padding:5px 0px 0px 20px;font-family:sans-serif;}
+h1{font-size:1.5em;}
+p{line-height:0.7em;}
+#labels{float:left;width:170px;}
+#status{background-color:#eeeeee;width:275px;padding: 2px 2px 2px 10px;}
+</style>
+<script>
+function getReadings() {
+	var xhttp = new XMLHttpRequest();
+	var json;
+
+	if (document.getElementById("ip").value.length < 8)
+		return;
+
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			json = JSON.parse(xhttp.responseText);
+			document.getElementById("counter").innerHTML = json.totalCounter;
+			document.getElementById("consumption").innerHTML = json.totalConsumption;
+			document.getElementById("power").innerHTML = json.currentPower;
+			document.getElementById("runtime").innerHTML = json.runtime;
+            document.getElementById("rssi").innerHTML = json.rssi;
+		}
+	}
+	xhttp.open("GET", "http://" + document.getElementById("ip").value + "/readings", true);
+  	xhttp.send();
+}
+</script>
+<body onload="setInterval(function() { getReadings(); }, 2000);">
+<div id="ampel">
+<h1>Wifi Power Meter</h1>
+<p><form onsubmit="return false;"><span style="color:red;">Enter IP-Address:</span>
+	<input id="ip" type="text" size="18"></form>
+</p>
+<div id="status">
+<p><span id="labels">TotalCounter:</span><span id="counter">---</span></p>
+<p><span id="labels">TotalConsumption:</span><span id="consumption">---</span> kWh</p>
+<p><span id="labels">CurrentConsumption:</span><span id="power">---</span> Watt</p>
+<p><span id="labels">Runtime:</span><span id="runtime">--d --h --m</span></p>
+<p><span id="labels">RSSI:</span><span id="rssi">--</span> dBm</p>
+
+</div>
+</div>
+</body>
+</html>
